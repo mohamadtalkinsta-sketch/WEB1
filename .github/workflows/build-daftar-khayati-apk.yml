@@ -1,0 +1,52 @@
+name: Build Daftar Khayati Android APK
+
+on:
+  push:
+    branches:
+      - build/daftar-khayati-apk
+    paths:
+      - "apps/daftar-khayati-android/**"
+      - ".github/workflows/build-daftar-khayati-apk.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Ensure Android SDK platform
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+
+      - name: Build debug APK
+        run: gradle --no-daemon -p apps/daftar-khayati-android :app:assembleDebug
+
+      - name: Check APK output
+        run: test -s apps/daftar-khayati-android/app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: daftar-khayati-android-apk
+          path: apps/daftar-khayati-android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14
