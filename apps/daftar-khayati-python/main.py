@@ -170,7 +170,7 @@ class DaftarKhayatiApp(App):
         parent.add_widget(row); return row
 
     def metric(self,parent,caption,value,sub,fill=PAPER):
-        tile=self.panel(112,fill,11)
+        tile=self.panel(120,fill,11)
         tile.add_widget(txt(caption,11,MUTED,True,26))
         tile.add_widget(txt(value,16,GREEN if fill!=PAPER else INK,True,34))
         tile.add_widget(txt(sub,9,MUTED,False,20)); parent.add_widget(tile)
@@ -180,7 +180,7 @@ class DaftarKhayatiApp(App):
         totals=summarize(self.data["entries"],self.data["receipts"])
         today_total=summarize(today_entries,[])
         name=self.data["settings"].get("name","").strip() or "خیاط عزیز"
-        hero=self.panel(222,GREEN,17)
+        hero=self.panel(250,GREEN,17)
         hero.add_widget(txt(datetime.now().strftime("%Y-%m-%d"),10,"#D6E6DA",False,20))
         hero.add_widget(txt(f"خوش آمدی، {name}",22,"#FFFFFF",True,40))
         hero.add_widget(txt("کارها را ثبت کن؛ محاسبهٔ دستمزد با برنامه.",12,"#E2EEE5",False,32))
@@ -194,7 +194,7 @@ class DaftarKhayatiApp(App):
         balance=totals["net"]-totals["received"]
         self.metric(grid,"ماندهٔ حساب",money(balance),"خالص کار منهای دریافتی","#F7EEE1" if balance<0 else PAPER)
         body.add_widget(grid); body.add_widget(heading("شروع سریع","کارت‌های آماده را می‌توانی ویرایش کنی."))
-        quick=self.panel(94,PAPER,12)
+        quick=self.panel(110,PAPER,12)
         quick.add_widget(txt(f"{len(self.data['cards'])} کارت کار آماده داری.",13,INK,True,28))
         self.button_row(quick,[("مدیریت کارت‌ها",lambda:self.go("cards"),"light"),("همهٔ ثبت‌ها",lambda:self.go("reports"),"outline")])
         body.add_widget(quick); body.add_widget(heading("آخرین کارها"))
@@ -209,16 +209,16 @@ class DaftarKhayatiApp(App):
         body.add_widget(heading("ثبت کار روزانه","اطلاعات اصلی را وارد کن؛ جزئیات اضافه اختیاری‌اند."))
         chosen=next((c for c in self.data["cards"] if c["id"]==self.selected_card_id),None)
         if chosen: self.form_type=chosen["type"]
-        type_panel=self.panel(76,PAPER,10); type_panel.add_widget(txt("نوع کار",11,MUTED,True,24))
+        type_panel=self.panel(90,PAPER,10); type_panel.add_widget(txt("نوع کار",11,MUTED,True,24))
         row=BoxLayout(size_hint_y=None,height=dp(38),spacing=dp(8))
         for val in ("تکمیلی","زنجیره‌ای"):
             b=RoundButton(val,"primary" if val==self.form_type else "light",height=38)
             b.bind(on_release=lambda instance,v=val:self.set_form_type(v)); row.add_widget(b)
         type_panel.add_widget(row); body.add_widget(type_panel)
-        select=self.panel(88,GREEN_LIGHT,11); select.add_widget(txt("کارت لباس یا قطعه",11,MUTED,True,23))
+        select=self.panel(101,GREEN_LIGHT,11); select.add_widget(txt("کارت لباس یا قطعه",11,MUTED,True,23))
         card_caption=f"{chosen.get('emoji','🧵')}  {chosen['name']} · {money(chosen.get('price',0))}" if chosen else "انتخاب کارت از فهرست"
         self.button_row(select,[(card_caption,self.open_card_picker,"light")]); body.add_widget(select)
-        form=self.panel(190,PAPER,13); form.add_widget(txt("تعداد و دستمزد",15,INK,True,28))
+        form=self.panel(228,PAPER,13); form.add_widget(txt("تعداد و دستمزد",15,INK,True,28))
         qty_row=BoxLayout(size_hint_y=None,height=dp(72),spacing=dp(9))
         qty_box=BoxLayout(orientation="vertical",spacing=dp(3)); qty_box.add_widget(txt("تعداد",10,MUTED,True,22))
         qty=field("مثلاً ۱۲","1","int"); qty_box.add_widget(qty)
@@ -243,10 +243,10 @@ class DaftarKhayatiApp(App):
         for item in (color_input,size_input,note_input,button_cost_input,external_input,charge_button): advanced.add_widget(item)
         def show_advanced(instance):
             visible=advanced.height==0
-            advanced.height=dp(330) if visible else 0; advanced.opacity=1 if visible else 0
+            advanced.height=dp(370) if visible else 0; advanced.opacity=1 if visible else 0
             advanced.disabled=not visible; instance.text=fa("− بستن جزئیات" if visible else "＋ جزئیات اختیاری (رنگ، سایز و هزینه‌ها)")
         advanced_button.bind(on_release=show_advanced); body.add_widget(advanced_button); body.add_widget(advanced)
-        preview=self.panel(82,GREEN_LIGHT,11); net_label=txt("دستمزد خالص تقریبی: ۰ تومان",15,GREEN,True,34)
+        preview=self.panel(90,GREEN_LIGHT,11); net_label=txt("دستمزد خالص تقریبی: ۰ تومان",15,GREEN,True,34)
         preview.add_widget(net_label); preview.add_widget(txt("عدد نهایی پس از ثبت محاسبه می‌شود.",10,MUTED,False,23))
         def update_preview(*_):
             estimate=to_number(qty.text)*to_number(price.text)-(to_number(button_cost_input.text) if charge_buttons[0] else 0)-to_number(external_input.text)
@@ -334,7 +334,7 @@ class DaftarKhayatiApp(App):
             cards=[c for c in self.data["cards"] if (self.card_filter=="هر دو" or c["type"]==self.card_filter)
                    and (q in c["name"].lower() or q in c.get("description","").lower())]
             for card in cards:
-                panel=self.panel(103,PAPER,10)
+                panel=self.panel(122,PAPER,10)
                 row=BoxLayout(size_hint_y=None,height=dp(46),spacing=dp(8))
                 glyph=Surface(fill=GREEN_LIGHT,size_hint=(None,1),width=dp(47),radius=12)
                 glyph.add_widget(txt(card.get("emoji","🧵"),23,GREEN,True,46,"center")); row.add_widget(glyph)
@@ -411,7 +411,7 @@ class DaftarKhayatiApp(App):
         return "👕"
 
     def entry_row(self,entry,deletable=False):
-        panel=self.panel(84 if deletable else 72,PAPER,9)
+        panel=self.panel(110 if deletable else 72,PAPER,9)
         row=BoxLayout(size_hint_y=None,height=dp(44),spacing=dp(8))
         glyph=Surface(fill=GREEN_LIGHT,size_hint=(None,1),width=dp(43),radius=11)
         glyph.add_widget(txt(entry.get("emoji","🧵"),20,GREEN,True,43,"center")); row.add_widget(glyph)
@@ -432,10 +432,10 @@ class DaftarKhayatiApp(App):
     def page_receipts(self,body):
         totals=summarize(self.data["entries"],self.data["receipts"])
         body.add_widget(heading("دریافتی‌ها","مبلغی که واقعاً گرفته‌ای جدا از دستمزد ثبت می‌شود."))
-        total_panel=self.panel(86,GREEN_LIGHT,12)
+        total_panel=self.panel(96,GREEN_LIGHT,12)
         total_panel.add_widget(txt("مجموع دریافتی",11,MUTED,True,23))
         total_panel.add_widget(txt(money(totals["received"]),20,GREEN,True,38)); body.add_widget(total_panel)
-        form=self.panel(260,PAPER,13); form.add_widget(txt("ثبت دریافتی جدید",15,INK,True,30))
+        form=self.panel(334,PAPER,13); form.add_widget(txt("ثبت دریافتی جدید",15,INK,True,30))
         amount=field("مبلغ (تومان)","","int"); date_input=field("سال-ماه-روز",today_iso()); note=field("توضیح: پیش‌پرداخت، تسویه و ...")
         form.add_widget(txt("مبلغ دریافتی",10,MUTED,True,22)); form.add_widget(amount)
         form.add_widget(txt("تاریخ",10,MUTED,True,22)); form.add_widget(date_input); form.add_widget(note)
@@ -482,7 +482,7 @@ class DaftarKhayatiApp(App):
             self.data["settings"]["name"]=name.text.strip()
             if self.save(): self.message("ذخیره شد","نام در صفحهٔ اصلی نمایش داده می‌شود."); self.go("home")
         self.button_row(panel,[("ذخیرهٔ نام",save_name,"primary")]); body.add_widget(panel)
-        backup=self.panel(145,GREEN_LIGHT,13)
+        backup=self.panel(160,GREEN_LIGHT,13)
         backup.add_widget(txt("نسخهٔ پشتیبان اطلاعات",14,GREEN,True,30))
         backup.add_widget(txt("یک فایل JSON در حافظهٔ داخلی خصوصی اپ ساخته می‌شود.",10,MUTED,False,38))
         self.button_row(backup,[("ساخت پشتیبان",self.make_backup,"light")]); body.add_widget(backup)
